@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peta Rumah Warga Jaten - KKN ISL UKDW 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',system-ui,sans-serif; background:#f0f4f8; color:#1a2a3a; height:100vh; display:flex; flex-direction:column; }
+
+/* ── HEADER ── */
+header {
+  background: linear-gradient(135deg, #0d3b5e 0%, #1a5276 60%, #1f6691 100%);
+  color:#fff;
+  padding:0 16px;
+  height:56px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-shrink:0;
+  box-shadow:0 2px 12px rgba(0,0,0,0.25);
+  position:relative;
+  overflow:hidden;
+}
+header::before {
+  content:'';
+  position:absolute;
+  inset:0;
+  background: radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.06) 0%, transparent 60%);
+  pointer-events:none;
+}
+
+.header-left { display:flex; align-items:center; gap:12px; min-width:0; z-index:1; }
+
+.header-logo {
+  width:36px; height:36px;
+  background:rgba(255,255,255,0.15);
+  border:1.5px solid rgba(255,255,255,0.25);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+  flex-shrink:0;
+  backdrop-filter:blur(4px);
+}
+
+.header-text h1 {
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:0.01em;
+  line-height:1.2;
+}
+.header-text p {
+  font-size:10px;
+  opacity:0.65;
+  margin-top:1px;
+  letter-spacing:0.02em;
+}
+
+.header-divider {
+  width:1px; height:28px;
+  background:rgba(255,255,255,0.2);
+  flex-shrink:0;
+}
+
+.header-right { display:flex; align-items:center; gap:8px; flex-shrink:0; z-index:1; }
+
+.stat-pill {
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:20px;
+  padding:4px 12px;
+  font-size:11px;
+  display:flex; align-items:center; gap:5px;
+  white-space:nowrap;
+  backdrop-filter:blur(4px);
+}
+.stat-pill strong { font-size:12px; }
+
+.layer-toggle {
+  display:flex; gap:2px;
+  background:rgba(0,0,0,0.2);
+  border-radius:8px;
+  padding:3px;
+  border:1px solid rgba(255,255,255,0.1);
+}
+.layer-btn {
+  padding:3px 10px; border-radius:6px; border:none;
+  font-size:11px; cursor:pointer;
+  color:rgba(255,255,255,0.6);
+  background:transparent; transition:all 0.15s; font-weight:500;
+}
+.layer-btn.active { background:rgba(255,255,255,0.95); color:#0d3b5e; font-weight:700; }
+
+.btn-header {
+  padding:6px 13px; border-radius:8px; border:none;
+  font-size:12px; font-weight:600; cursor:pointer;
+  display:flex; align-items:center; gap:5px;
+  transition:all 0.15s; white-space:nowrap; text-decoration:none;
+}
+.btn-white { background:rgba(255,255,255,0.95); color:#0d3b5e; }
+.btn-white:hover { background:#fff; box-shadow:0 2px 8px rgba(0,0,0,0.15); }
+.btn-outline { background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.25); }
+.btn-outline:hover { background:rgba(255,255,255,0.2); }
+
+.btn-hamburger {
+  display:none;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.25);
+  color:#fff; border-radius:8px;
+  padding:6px 10px; font-size:16px; cursor:pointer;
+}
+
+/* ── MAIN ── */
+.main { display:flex; flex:1; overflow:hidden; position:relative; }
+
+/* ── SIDEBAR ── */
+.sidebar { width:300px; background:#fff; border-right:1px solid #d0dce8; display:flex; flex-direction:column; flex-shrink:0; }
+.sidebar.hidden { display:none; }
+.sidebar-header { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #e0ecf8; background:#f8fbff; }
+.sidebar-title { font-size:13px; font-weight:600; color:#0d3b5e; display:flex; align-items:center; gap:6px; }
+.sidebar-count { background:#e8f0fb; color:#1a5276; font-size:10px; font-weight:700; padding:2px 7px; border-radius:10px; }
+.sidebar-search { padding:10px; border-bottom:1px solid #e0ecf8; }
+.search-input { width:100%; padding:7px 11px; border:1.5px solid #b8d0e8; border-radius:8px; font-size:13px; outline:none; background:#f5f9ff; color:#1a2a3a; transition:border-color 0.2s; }
+.search-input:focus { border-color:#1a5276; background:#fff; }
+.sidebar-list { flex:1; overflow-y:auto; padding:7px; }
+.sidebar-list::-webkit-scrollbar { width:4px; }
+.sidebar-list::-webkit-scrollbar-thumb { background:#b8d0e8; border-radius:2px; }
+
+.warga-card { padding:9px 11px; border-radius:8px; border:1.5px solid #e8f0f8; margin-bottom:5px; cursor:pointer; transition:all 0.15s; background:#fff; display:flex; align-items:flex-start; gap:10px; }
+.warga-card:hover { border-color:#1a5276; background:#f5f9ff; transform:translateX(2px); }
+.warga-card.selected { border-color:#1a5276; background:#eef4ff; box-shadow:0 2px 8px rgba(26,82,118,0.12); }
+.warga-avatar { width:34px; height:34px; background:linear-gradient(135deg,#1a5276,#2980b9); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; color:#fff; font-weight:700; flex-shrink:0; box-shadow:0 2px 6px rgba(26,82,118,0.3); }
+.warga-nama { font-size:12.5px; font-weight:600; color:#1a2a3a; word-break:break-word; line-height:1.3; }
+.warga-sub { font-size:10.5px; color:#7a9ab8; margin-top:2px; line-height:1.4; }
+.warga-tag { display:inline-block; font-size:9px; padding:1px 6px; border-radius:8px; background:#e8f4fd; color:#1a5276; font-weight:600; margin-top:3px; }
+
+/* ── MAP ── */
+.map-wrap { position:relative; flex:1; }
+#map { width:100%; height:100%; min-height:400px; z-index:0; }
+.btn-toggle-sidebar { position:absolute; top:50%; left:10px; transform:translateY(-50%); z-index:1000; background:#1a5276; color:#fff; border:none; border-radius:8px; padding:7px 10px; cursor:pointer; font-size:14px; box-shadow:0 2px 8px rgba(0,0,0,0.3); transition:background 0.15s; }
+.btn-toggle-sidebar:hover { background:#0d3b5e; }
+.sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1500; }
+.sidebar-overlay.show { display:block; }
+
+/* ── POPUP ── */
+.popup-wrap { min-width:200px; }
+.popup-header { background:linear-gradient(135deg,#0d3b5e,#1a5276); color:#fff; padding:10px 13px; margin:-10px -14px 10px; border-radius:4px 4px 0 0; display:flex; align-items:center; gap:8px; }
+.popup-avatar { width:30px; height:30px; background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; font-weight:700; border:1.5px solid rgba(255,255,255,0.3); }
+.popup-nama { font-size:13px; font-weight:700; }
+.popup-row { display:flex; justify-content:space-between; align-items:flex-start; padding:5px 0; border-bottom:1px solid #e8f0f8; font-size:11.5px; gap:8px; }
+.popup-row:last-of-type { border-bottom:none; }
+.popup-label { color:#7a9ab8; font-weight:500; white-space:nowrap; }
+.popup-val { font-weight:600; color:#1a2a3a; text-align:right; }
+
+/* ── TOAST ── */
+.toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(80px); background:#0d3b5e; color:#fff; padding:10px 20px; border-radius:20px; font-size:13px; z-index:3000; transition:transform 0.3s; pointer-events:none; box-shadow:0 4px 16px rgba(0,0,0,0.2); }
+.toast.show { transform:translateX(-50%) translateY(0); }
+.empty-state { text-align:center; padding:36px 20px; color:#7a9ab8; font-size:13px; }
+.empty-state .emoji { font-size:30px; margin-bottom:8px; }
+
+/* ── MOBILE LAYER BAR ── */
+.mobile-layer-bar { display:none; position:absolute; top:10px; left:50%; transform:translateX(-50%); z-index:1000; background:rgba(13,59,94,0.92); border-radius:20px; padding:4px 6px; gap:4px; backdrop-filter:blur(4px); }
+.mobile-layer-bar .layer-btn { color:rgba(255,255,255,0.7); font-size:11px; padding:3px 10px; }
+.mobile-layer-bar .layer-btn.active { background:#fff; color:#0d3b5e; }
+
+.judul-short { display:none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  header { height:52px; padding:0 10px; }
+  .header-text h1 { font-size:12px; }
+  .header-text p { display:none; }
+  .header-divider { display:none; }
+  .header-right .layer-toggle { display:none; }
+  .header-right .stat-pill { display:none; }
+  .btn-header span { display:none; }
+  .btn-hamburger { display:flex; align-items:center; justify-content:center; }
+  .judul-full { display:none; }
+  .judul-short { display:inline; }
+  .sidebar { position:fixed; top:0; left:0; bottom:0; width:85vw; max-width:300px; z-index:2000; transform:translateX(-100%); transition:transform 0.3s; display:flex !important; }
+  .sidebar.mobile-open { transform:translateX(0); }
+  .btn-toggle-sidebar { display:none; }
+  .mobile-layer-bar { display:flex !important; }
+}
+@media (min-width: 641px) {
+  .btn-hamburger { display:none; }
+  .mobile-layer-bar { display:none !important; }
+  .sidebar-overlay { display:none !important; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-logo">🏠</div>
+    <div class="header-divider"></div>
+    <div class="header-text">
+      <h1>
+        <span class="judul-full">Peta Rumah Warga Jaten</span>
+        <span class="judul-short">Maps Jaten</span>
+      </h1>
+      <p>KKN ISL UKDW 2026 — Kelompok Jaten</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="layer-toggle">
+      <button class="layer-btn" data-layer="osm">Peta</button>
+      <button class="layer-btn active" data-layer="satelit">Satelit</button>
+      <button class="layer-btn" data-layer="hybrid">Hybrid</button>
+    </div>
+    <div class="stat-pill">🏠 <strong><span id="count-total">0</span></strong> warga</div>
+    <button class="btn-header btn-white" onclick="loadData()">🔄 <span>Refresh</span></button>
+    <a href="https://docs.google.com/spreadsheets/d/1L2oHu_JmNGSU2ws0hHEKd3lBINgzDyntdt4QucSUPz0/edit?gid=0#gid=0" target="_blank" class="btn-header btn-outline">📝 <span>Update Data</span></a>
+    <button class="btn-hamburger" onclick="toggleMobileSidebar()">☰</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">🏠 Daftar Warga <span class="sidebar-count" id="sidebar-count">0</span></span>
+      <button onclick="tutupSidebar()" style="background:none;border:none;font-size:18px;cursor:pointer;color:#1a5276;line-height:1;">✕</button>
+    </div>
+    <div class="sidebar-search">
+      <input class="search-input" type="text" id="searchInput" placeholder="🔍  Cari nama warga...">
+    </div>
+    <div class="sidebar-list" id="sidebarList">
+      <div class="empty-state"><div class="emoji">⏳</div>Memuat data...</div>
+    </div>
+  </div>
+
+  <div class="map-wrap">
+    <button class="btn-toggle-sidebar" id="btnToggle" onclick="toggleSidebar()">◀</button>
+    <div class="mobile-layer-bar">
+      <button class="layer-btn" data-layer="osm">Peta</button>
+      <button class="layer-btn active" data-layer="satelit">Satelit</button>
+      <button class="layer-btn" data-layer="hybrid">Hybrid</button>
+    </div>
+    <div id="map"></div>
+   <div style="position:absolute;top:10px;right:10px;z-index:1000;">
+  <img src="download.jpg" style="width:60px;height:60px;">
+</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var SHEETS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQCzUF7Y-JgYSG67qGNFhRjSixzjh3QvUGKm7VRVzwTvWzSxe92o5yyjTp9XGAC0Op5jSCSADwYCAe6/pub?gid=0&single=true&output=csv";
+
+var dataWarga = [];
+var searchQuery = "";
+var selectedId = null;
+var markers = {};
+
+var tileLayers = {
+  osm:    L.tileLayer("https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", { attribution:"© Google Maps", maxZoom:20 }),
+  satelit:L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", { attribution:"© Google Maps", maxZoom:20 }),
+  hybrid: L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", { attribution:"© Google Maps", maxZoom:20 })
+};
+
+var map = L.map("map").setView([-7.8012, 110.2804], 15);
+tileLayers.satelit.addTo(map);
+setTimeout(function(){ map.invalidateSize(); }, 200);
+var layerAktif = "satelit";
+
+document.querySelectorAll(".layer-btn").forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    var layer = btn.dataset.layer;
+    if(layer === layerAktif) return;
+    map.removeLayer(tileLayers[layerAktif]);
+    tileLayers[layer].addTo(map);
+    layerAktif = layer;
+    document.querySelectorAll(".layer-btn").forEach(function(b){ b.classList.remove("active"); });
+    document.querySelectorAll("[data-layer='"+layer+"']").forEach(function(b){ b.classList.add("active"); });
+  });
+});
+
+function parseCSV(text) {
+  var lines = text.trim().split("\n");
+  var headers = lines[0].split("\t").length > 1 ? lines[0].split("\t") : lines[0].split(",");
+  headers = headers.map(function(h){ return h.trim().replace(/^"|"$/g,"").toLowerCase(); });
+  var result = [];
+  for(var i=1; i<lines.length; i++) {
+    if(!lines[i].trim()) continue;
+    var cols = []; var cur = ""; var inQuote = false;
+    var sep = lines[i].indexOf("\t") >= 0 ? "\t" : ",";
+    for(var c=0; c<lines[i].length; c++) {
+      var ch = lines[i][c];
+      if(ch==='"') { inQuote = !inQuote; }
+      else if(ch===sep && !inQuote) { cols.push(cur.trim()); cur=""; }
+      else { cur += ch; }
+    }
+    cols.push(cur.trim());
+    var obj = {};
+    headers.forEach(function(h, idx){ obj[h] = (cols[idx]||"").replace(/^"|"$/g,"").trim(); });
+    var nama = obj["nama warga"]||obj.nama||"";
+    if(!nama) continue;
+    result.push({
+      id: parseInt(obj.id)||i,
+      nama: nama,
+      alamat: obj.alamat||"-",
+      pekerjaan: obj.pekerjaan||"-",
+      gender: obj.gender||"-",
+      anggota: obj["jumlah anggota keluarga"]||obj.anggota||"-",
+      lat: parseFloat(obj.lat)||0,
+      lng: parseFloat(obj.lng)||0
+    });
+  }
+  return result;
+}
+
+function getInisial(nama) {
+  return nama.split(" ").slice(0,2).map(function(w){ return w[0]||""; }).join("").toUpperCase();
+}
+
+function buatIcon() {
+  return L.divIcon({
+    className:"",
+    html:"<div style=\"width:14px;height:14px;border-radius:50%;background:#e74c3c;border:2.5px solid #fff;box-shadow:0 2px 8px rgba(231,76,60,0.5);\"></div>",
+    iconSize:[14,14], iconAnchor:[7,7]
+  });
+}
+
+function buatPopup(d) {
+  var gmapsUrl = "https://www.google.com/maps?q="+d.lat+","+d.lng;
+  return "<div class='popup-wrap'>"
+    +"<div class='popup-header'><div class='popup-avatar'>"+getInisial(d.nama)+"</div>"
+    +"<div><div class='popup-nama'>"+d.nama+"</div></div></div>"
+    +"<div class='popup-row'><span class='popup-label'>Alamat</span><span class='popup-val'>"+d.alamat+"</span></div>"
+    +"<div class='popup-row'><span class='popup-label'>Pekerjaan</span><span class='popup-val'>"+d.pekerjaan+"</span></div>"
+    +"<div class='popup-row'><span class='popup-label'>Gender</span><span class='popup-val'>"+d.gender+"</span></div>"
+    +"<div class='popup-row'><span class='popup-label'>Anggota Keluarga</span><span class='popup-val'>"+d.anggota+" orang</span></div>"
+    +"<div style='margin-top:8px;text-align:center'>"
+    +"<a href='"+gmapsUrl+"' target='_blank' style='display:inline-block;padding:6px 14px;background:linear-gradient(135deg,#0d3b5e,#1a5276);color:#fff;border-radius:6px;font-size:12px;text-decoration:none;font-weight:600;box-shadow:0 2px 6px rgba(13,59,94,0.3)'>📍 Buka di Google Maps</a>"
+    +"</div></div>";
+}
+
+function tambahMarker(d) {
+  if(!d.lat || !d.lng) return;
+  markers[d.id] = L.marker([d.lat, d.lng], {icon: buatIcon()})
+    .addTo(map).bindPopup(buatPopup(d), {maxWidth:240});
+}
+
+function renderSidebar() {
+  var list = document.getElementById("sidebarList");
+  var filtered = dataWarga.filter(function(d) {
+    return d.nama.toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0
+        || d.alamat.toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0;
+  });
+  document.getElementById("sidebar-count").textContent = filtered.length;
+  if(!filtered.length) { list.innerHTML = "<div class='empty-state'><div class='emoji'>🔍</div>Tidak ada data</div>"; return; }
+  var html = "";
+  filtered.forEach(function(d) {
+    html += "<div class='warga-card"+(selectedId===d.id?" selected":"")+"' onclick='pilihWarga("+d.id+")'>"
+      +"<div class='warga-avatar'>"+getInisial(d.nama)+"</div>"
+      +"<div style='flex:1;min-width:0'>"
+      +"<div class='warga-nama'>"+d.nama+"</div>"
+      +"<div class='warga-sub'>"+d.alamat+"</div>"
+      +"<div class='warga-sub'>"+d.pekerjaan+" · "+d.gender+"</div>"
+      +"</div></div>";
+  });
+  list.innerHTML = html;
+}
+
+function pilihWarga(id) {
+  selectedId = id;
+  var d = dataWarga.find(function(x){ return x.id===id; });
+  if(!d || !d.lat || !d.lng) return;
+  map.setView([d.lat, d.lng], 18, {animate:true});
+  if(markers[id]) markers[id].openPopup();
+  renderSidebar();
+  if(window.innerWidth <= 640) toggleMobileSidebar(false);
+}
+
+function updateStats() {
+  document.getElementById("count-total").textContent = dataWarga.length;
+  document.getElementById("sidebar-count").textContent = dataWarga.length;
+}
+
+function loadData() {
+  var list = document.getElementById("sidebarList");
+  list.innerHTML = "<div class='empty-state'><div class='emoji'>⏳</div>Memuat data...</div>";
+  fetch(SHEETS_URL)
+    .then(function(r){ return r.text(); })
+    .then(function(csv) {
+      dataWarga = parseCSV(csv);
+      Object.keys(markers).forEach(function(k){ map.removeLayer(markers[k]); });
+      markers = {};
+      dataWarga.forEach(function(d){ tambahMarker(d); });
+      var valid = dataWarga.filter(function(d){ return d.lat && d.lng; });
+      if(valid.length > 0) {
+        var cLat = valid.reduce(function(s,d){return s+d.lat;},0)/valid.length;
+        var cLng = valid.reduce(function(s,d){return s+d.lng;},0)/valid.length;
+        map.setView([cLat, cLng], 16, {animate:true});
+      }
+      updateStats(); renderSidebar();
+      tampilToast("✅ Data dimuat — "+dataWarga.length+" warga");
+    })
+    .catch(function() {
+      list.innerHTML = "<div class='empty-state'><div class='emoji'>❌</div>Gagal memuat data.</div>";
+    });
+}
+
+document.getElementById("searchInput").addEventListener("input", function(e) { searchQuery = e.target.value; renderSidebar(); });
+
+function tampilToast(msg) {
+  var t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 2500);
+}
+
+function toggleSidebar() {
+  var sidebar = document.getElementById("sidebar");
+  var btn = document.getElementById("btnToggle");
+  sidebar.classList.toggle("hidden");
+  btn.textContent = sidebar.classList.contains("hidden") ? "▶" : "◀";
+  setTimeout(function(){ map.invalidateSize(); }, 300);
+}
+
+function toggleMobileSidebar(forceClose) {
+  var sidebar = document.getElementById("sidebar");
+  var overlay = document.getElementById("sidebarOverlay");
+  var isOpen = sidebar.classList.contains("mobile-open");
+  if(forceClose === false || isOpen) {
+    sidebar.classList.remove("mobile-open");
+    overlay.classList.remove("show");
+  } else {
+    sidebar.classList.add("mobile-open");
+    overlay.classList.add("show");
+  }
+  setTimeout(function(){ map.invalidateSize(); }, 300);
+}
+
+function tutupSidebar() {
+  if(window.innerWidth <= 640) { toggleMobileSidebar(false); } else { toggleSidebar(); }
+}
+
+loadData();
+</script>
+</body>
+</html>
