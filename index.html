@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Peta Rumah Warga Jaten - KKN ISL UKDW 2026</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link rel="stylesheet" href="style.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peta Rumah Warga Jaten - KKN ISL UKDW 2026</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
 
 <header>
   <div class="header-left">
-    <div class="header-logo">🏠</div>
-    <div class="header-divider"></div>
-    <div class="header-text">
+    <div class="header-badge">
+      <div class="header-badge-icon">🏘️</div>
+      <div class="header-badge-text">Jaten</div>
+    </div>
+    <div class="header-sep"></div>
+    <div class="header-title">
       <h1>
         <span class="judul-full">Peta Rumah Warga Jaten</span>
         <span class="judul-short">Maps Jaten</span>
       </h1>
-      <p>KKN ISL UKDW 2026 — Kelompok Jaten</p>
+      <p>KKN ISL UKDW 2026 — Kelompok Gubug</p>
     </div>
   </div>
   <div class="header-right">
@@ -28,9 +34,9 @@
       <button class="layer-btn active" data-layer="satelit">Satelit</button>
       <button class="layer-btn" data-layer="hybrid">Hybrid</button>
     </div>
-    <div class="stat-pill">🏠 <strong><span id="count-total">0</span></strong> warga</div>
-    <button class="btn-header btn-white" onclick="loadData()">🔄 <span>Refresh</span></button>
-    <a href="https://docs.google.com/spreadsheets/d/1L2oHu_JmNGSU2ws0hHEKd3lBINgzDyntdt4QucSUPz0/edit?gid=0#gid=0" target="_blank" class="btn-header btn-outline">📝 <span>Update Data</span></a>
+    <div class="stat-chip">🏠 <span class="stat-chip-num" id="count-total">0</span> warga</div>
+    <button class="btn-header btn-primary" onclick="loadData()">🔄 <span>Refresh</span></button>
+    <a href="https://docs.google.com/spreadsheets/d/1L2oHu_JmNGSU2ws0hHEKd3lBINgzDyntdt4QucSUPz0/edit?gid=0#gid=0" target="_blank" class="btn-header btn-ghost">📝 <span>Update Data</span></a>
     <button class="btn-hamburger" onclick="toggleMobileSidebar()">☰</button>
   </div>
 </header>
@@ -40,14 +46,20 @@
 
   <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-title">🏠 Daftar Warga <span class="sidebar-count" id="sidebar-count">0</span></span>
+      <span class="sidebar-title">
+        🏠 Daftar Warga
+        <span class="sidebar-badge" id="sidebar-count">0</span>
+      </span>
       <button onclick="tutupSidebar()" class="btn-close-sidebar">✕</button>
     </div>
     <div class="sidebar-search">
-      <input class="search-input" type="text" id="searchInput" placeholder="🔍  Cari nama warga...">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" type="text" id="searchInput" placeholder="Cari nama atau alamat...">
+      </div>
     </div>
     <div class="sidebar-list" id="sidebarList">
-      <div class="empty-state"><div class="emoji">⏳</div>Memuat data...</div>
+      <div class="empty-state"><div class="emoji">⏳</div><p>Memuat data...</p></div>
     </div>
   </div>
 
@@ -59,6 +71,7 @@
       <button class="layer-btn" data-layer="hybrid">Hybrid</button>
     </div>
     <div id="map"></div>
+    
     <div class="compass-container">
       <img src="peta.jpg" class="compass-img" alt="Mata Angin">
     </div>
@@ -81,7 +94,7 @@ var tileLayers = {
   hybrid: L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}", { attribution:"© Google Maps", maxZoom:20 })
 };
 
-var map = L.map("map").setView([-7.8012, 110.2804], 15);
+var map = L.map("map", { zoomControl:true }).setView([-7.8012, 110.2804], 15);
 tileLayers.satelit.addTo(map);
 setTimeout(function(){ map.invalidateSize(); }, 200);
 var layerAktif = "satelit";
@@ -136,31 +149,44 @@ function getInisial(nama) {
   return nama.split(" ").slice(0,2).map(function(w){ return w[0]||""; }).join("").toUpperCase();
 }
 
-function buatIcon() {
+function isSangkar(pekerjaan) {
+  return pekerjaan.toLowerCase().includes("sangkar burung");
+}
+
+function buatIcon(pekerjaan) {
+  if(isSangkar(pekerjaan)) {
+    return L.divIcon({
+      className:"",
+      html:"<div class='marker-icon-bird'>🐦</div>",
+      iconSize:[26,26], iconAnchor:[13,13]
+    });
+  }
   return L.divIcon({
     className:"",
-    html:"<div class='custom-marker-icon'></div>",
+    html:"<div class='marker-icon-dot'></div>",
     iconSize:[14,14], iconAnchor:[7,7]
   });
 }
 
 function buatPopup(d) {
   var gmapsUrl = "https://www.google.com/maps?q="+d.lat+","+d.lng;
+  var pkIcon = isSangkar(d.pekerjaan) ? "🐦 " : "";
   return "<div class='popup-wrap'>"
-    +"<div class='popup-header'><div class='popup-avatar'>"+getInisial(d.nama)+"</div>"
-    +"<div><div class='popup-nama'>"+d.nama+"</div></div></div>"
+    +"<div class='popup-header'>"
+    +"<div class='popup-avatar-wrap'>"+getInisial(d.nama)+"</div>"
+    +"<div><div class='popup-nama'>"+d.nama+"</div></div>"
+    +"</div>"
+    +"<div class='popup-body'>"
     +"<div class='popup-row'><span class='popup-label'>Alamat</span><span class='popup-val'>"+d.alamat+"</span></div>"
-    +"<div class='popup-row'><span class='popup-label'>Pekerjaan</span><span class='popup-val'>"+d.pekerjaan+"</span></div>"
-    +"<div class='popup-row'><span class='popup-label'>Gender</span><span class='popup-val'>"+d.gender+"</span></div>"
-    +"<div style='margin-top:8px;text-align:center'>"
-    +"<a href='"+gmapsUrl+"' target='_blank' style='display:inline-block;padding:6px 14px;background:linear-gradient(135deg,#0d3b5e,#1a5276);color:#fff;border-radius:6px;font-size:12px;text-decoration:none;font-weight:600;box-shadow:0 2px 6px rgba(13,59,94,0.3)'>📍 Buka di Google Maps</a>"
+    +"<div class='popup-row'><span class='popup-label'>Pekerjaan</span><span class='popup-val'>"+pkIcon+d.pekerjaan+"</span></div>"
+    +"<a href='"+gmapsUrl+"' target='_blank' class='popup-gmaps'>📍 Buka di Google Maps</a>"
     +"</div></div>";
 }
 
 function tambahMarker(d) {
   if(!d.lat || !d.lng) return;
-  markers[d.id] = L.marker([d.lat, d.lng], {icon: buatIcon()})
-    .addTo(map).bindPopup(buatPopup(d), {maxWidth:240});
+  markers[d.id] = L.marker([d.lat, d.lng], {icon: buatIcon(d.pekerjaan)})
+    .addTo(map).bindPopup(buatPopup(d), {maxWidth:250});
 }
 
 function renderSidebar() {
@@ -170,15 +196,19 @@ function renderSidebar() {
         || d.alamat.toLowerCase().indexOf(searchQuery.toLowerCase()) >= 0;
   });
   document.getElementById("sidebar-count").textContent = filtered.length;
-  if(!filtered.length) { list.innerHTML = "<div class='empty-state'><div class='emoji'>🔍</div>Tidak ada data</div>"; return; }
+  if(!filtered.length) {
+    list.innerHTML = "<div class='empty-state'><div class='emoji'>🔍</div><p>Tidak ada data</p></div>";
+    return;
+  }
   var html = "";
   filtered.forEach(function(d) {
+    var sangkar = isSangkar(d.pekerjaan);
     html += "<div class='warga-card"+(selectedId===d.id?" selected":"")+"' onclick='pilihWarga("+d.id+")'>"
-      +"<div class='warga-avatar'>"+getInisial(d.nama)+"</div>"
-      +"<div style='flex:1;min-width:0'>"
+      +"<div class='warga-avatar"+(sangkar?" sangkar":"")+"'>"+getInisial(d.nama)+"</div>"
+      +"<div class='warga-info'>"
       +"<div class='warga-nama'>"+d.nama+"</div>"
-      +"<div class='warga-sub'>"+d.alamat+"</div>"
-      +"<div class='warga-sub'>"+d.pekerjaan+" · "+d.gender+"</div>"
+      +"<div class='warga-meta'>"+d.alamat+"</div>"
+      +"<span class='warga-pill"+(sangkar?" sangkar":"")+"'>"+(sangkar?"🐦 ":"")+d.pekerjaan+"</span>"
       +"</div></div>";
   });
   list.innerHTML = html;
@@ -201,7 +231,7 @@ function updateStats() {
 
 function loadData() {
   var list = document.getElementById("sidebarList");
-  list.innerHTML = "<div class='empty-state'><div class='emoji'>⏳</div>Memuat data...</div>";
+  list.innerHTML = "<div class='empty-state'><div class='emoji'>⏳</div><p>Memuat data...</p></div>";
   fetch(SHEETS_URL)
     .then(function(r){ return r.text(); })
     .then(function(csv) {
@@ -216,10 +246,10 @@ function loadData() {
         map.setView([cLat, cLng], 16, {animate:true});
       }
       updateStats(); renderSidebar();
-      tampilToast("Data dimuat : "+dataWarga.length+" warga");
+      tampilToast("✅ "+dataWarga.length+" warga berhasil dimuat");
     })
     .catch(function() {
-      list.innerHTML = "<div class='empty-state'><div class='emoji'>❌</div>Gagal memuat data.</div>";
+      list.innerHTML = "<div class='empty-state'><div class='emoji'>❌</div><p>Gagal memuat data</p></div>";
     });
 }
 
@@ -228,7 +258,7 @@ document.getElementById("searchInput").addEventListener("input", function(e) { s
 function tampilToast(msg) {
   var t = document.getElementById("toast");
   t.textContent = msg; t.classList.add("show");
-  setTimeout(function(){ t.classList.remove("show"); }, 2500);
+  setTimeout(function(){ t.classList.remove("show"); }, 2800);
 }
 
 function toggleSidebar() {
