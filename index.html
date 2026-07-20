@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Peta Rumah Warga Jaten - KKN ISL UKDW 2026</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<!-- Memanggil file CSS eksternal -->
 <link rel="stylesheet" href="style.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
@@ -60,10 +59,8 @@
       <button class="layer-btn" data-layer="hybrid">Hybrid</button>
     </div>
     <div id="map"></div>
-    
-    <!-- Inline CSS pada kompas sudah dihapus & diganti dengan class -->
     <div class="compass-container">
-      <img src="download.jpg" class="compass-img" alt="Mata Angin">
+      <img src="peta.jpg" class="compass-img" alt="Mata Angin">
     </div>
   </div>
 </div>
@@ -140,7 +137,6 @@ function getInisial(nama) {
 }
 
 function buatIcon() {
-  // Inline style icon dipindah menggunakan class 'custom-marker-icon'
   return L.divIcon({
     className:"",
     html:"<div class='custom-marker-icon'></div>",
@@ -221,7 +217,7 @@ function loadData() {
         map.setView([cLat, cLng], 16, {animate:true});
       }
       updateStats(); renderSidebar();
-      tampilToast("✅ Data dimuat — "+dataWarga.length+" warga");
+      tampilToast("Data dimuat — "+dataWarga.length+" warga");
     })
     .catch(function() {
       list.innerHTML = "<div class='empty-state'><div class='emoji'>❌</div>Gagal memuat data.</div>";
