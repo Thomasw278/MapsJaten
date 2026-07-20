@@ -246,7 +246,7 @@ function loadData() {
         map.setView([cLat, cLng], 16, {animate:true});
       }
       updateStats(); renderSidebar();
-      tampilToast("✅ "+dataWarga.length+" warga berhasil dimuat");
+      tampilToast("Jumlah Warga : "+dataWarga.length)
     })
     .catch(function() {
       list.innerHTML = "<div class='empty-state'><div class='emoji'>❌</div><p>Gagal memuat data</p></div>";
