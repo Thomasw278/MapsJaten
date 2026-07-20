@@ -217,7 +217,7 @@ function loadData() {
         map.setView([cLat, cLng], 16, {animate:true});
       }
       updateStats(); renderSidebar();
-      tampilToast("Data dimuat — "+dataWarga.length+" warga");
+      tampilToast("Data dimuat : "+dataWarga.length+" warga");
     })
     .catch(function() {
       list.innerHTML = "<div class='empty-state'><div class='emoji'>❌</div>Gagal memuat data.</div>";
