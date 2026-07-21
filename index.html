@@ -6,7 +6,7 @@
   <title>Peta Rumah Warga Jaten - KKN ISL UKDW 2026</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -16,7 +16,9 @@
 <header>
   <div class="header-left">
     <div class="header-badge">
-      <div class="header-badge-icon">🏘️</div>
+      <div class="header-badge-icon">
+        <img src="Logo_ISL.png" width="25px" height="25px">
+      </div>
       <div class="header-badge-text">Jaten</div>
     </div>
     <div class="header-sep"></div>
@@ -25,7 +27,7 @@
         <span class="judul-full">Peta Rumah Warga Jaten</span>
         <span class="judul-short">Maps Jaten</span>
       </h1>
-      <p>KKN ISL UKDW 2026 — Kelompok Gubug</p>
+      <p>KKN ISL UKDW 2026 | Kelompok Jaten</p>
     </div>
   </div>
   <div class="header-right">
@@ -72,8 +74,14 @@
     </div>
     <div id="map"></div>
     
-    <div class="compass-container">
-      <img src="peta.jpg" class="compass-img" alt="Mata Angin">
+    <div class="compass-container" title="Klik untuk reset ke arah Utara">
+      <div class="compass-dial">
+        <span class="dir north">U</span>
+        <span class="dir east">T</span>
+        <span class="dir south">S</span>
+        <span class="dir west">B</span>
+        <div class="compass-needle"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -96,7 +104,37 @@ var tileLayers = {
 
 var map = L.map("map", { zoomControl:true }).setView([-7.8012, 110.2804], 15);
 tileLayers.satelit.addTo(map);
-setTimeout(function(){ map.invalidateSize(); }, 200);
+
+var compassDial = document.querySelector('.compass-dial');
+var lastCenter = map.getCenter();
+
+function updateCompassRotation() {
+  var currentCenter = map.getCenter();
+  var dy = currentCenter.lat - lastCenter.lat;
+  var dx = currentCenter.lng - lastCenter.lng;
+
+  if (Math.abs(dx) > 0.000001 || Math.abs(dy) > 0.000001) {
+    var angle = Math.atan2(dx, dy) * (180 / Math.PI);
+    compassDial.style.setProperty('--compass-angle', angle + 'deg');
+    compassDial.style.transform = "rotateX(25deg) rotateY(-10deg) rotate(" + angle + "deg)";
+  }
+}
+
+map.on('move', updateCompassRotation);
+
+map.on('moveend', function() {
+  lastCenter = map.getCenter();
+});
+
+if (compassDial) {
+  compassDial.addEventListener('click', function() {
+    lastCenter = map.getCenter();
+    compassDial.style.setProperty('--compass-angle', '0deg');
+    compassDial.style.transform = "rotateX(25deg) rotateY(-10deg) rotate(0deg)";
+    tampilToast("🧭 Kompas direset ke arah Utara");
+  });
+}
+
 var layerAktif = "satelit";
 
 document.querySelectorAll(".layer-btn").forEach(function(btn) {
@@ -246,7 +284,7 @@ function loadData() {
         map.setView([cLat, cLng], 16, {animate:true});
       }
       updateStats(); renderSidebar();
-      tampilToast("Jumlah Warga : "+dataWarga.length)
+      tampilToast("Jumlah Warga : "+dataWarga.length);
     })
     .catch(function() {
       list.innerHTML = "<div class='empty-state'><div class='emoji'>❌</div><p>Gagal memuat data</p></div>";
