@@ -472,16 +472,19 @@ header::after {
   display: block; 
 }
 
+<<<<<<< HEAD
 /* ── MATA ANGIN / KOMPAS CSS MODERN & SANGAT TAJAM ── */
+=======
+/* ── MATA ANGIN / KOMPAS (Pindahan dari inline CSS) ── */
+>>>>>>> parent of 4a56420 (Update UI / UX | Fungsi App)
 .compass-container {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 12px;
+  right: 12px;
   z-index: 1000;
-  perspective: 600px;
-  pointer-events: auto;
 }
 
+<<<<<<< HEAD
 /* ── MATA ANGIN / KOMPAS (UKURAN DIPERBESAR) ── */
 .compass-dial {
   width: 120px;   /* Ukuran diperbesar (sebelumnya 90px) */
@@ -533,6 +536,17 @@ header::after {
 }
 
 /* ── ICON MARKER JAVASCRIPT ── */
+=======
+.compass-img {
+  width: 156px;
+  height: 156px;
+  border-radius: 50%;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+  border: 2px solid #fff;
+}
+
+/* ── ICON MARKER JAVASCRIPT (Pindahan dari JS inline style) ── */
+>>>>>>> parent of 4a56420 (Update UI / UX | Fungsi App)
 .marker-icon-bird {
   font-size: 22px;
   line-height: 1;
