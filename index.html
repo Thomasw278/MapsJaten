@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Peta Rumah Warga Jaten - KKN ISL UKDW 2026</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -230,9 +230,9 @@ function buatPopup(d) {
 
 function tambahMarker(d) {
   if(!d.lat || !d.lng) return;
-  /* Batas lebar maksimal 420px agar popup jauh lebih panjang & luas */
+  /* Batas lebar maksimal disesuaikan ke 300px agar lebih kompak & ringkas */
   markers[d.id] = L.marker([d.lat, d.lng], {icon: buatIcon(d.pekerjaan)})
-    .addTo(map).bindPopup(buatPopup(d), {maxWidth: 420});
+    .addTo(map).bindPopup(buatPopup(d), {maxWidth: 300});
 }
 
 function renderSidebar() {
