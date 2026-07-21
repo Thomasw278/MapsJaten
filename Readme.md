@@ -1,27 +1,48 @@
-# Peta Digital Rumah Warga Jaten
+<div align="center">
 
-Sebuah aplikasi peta digital berbasis web (*Web GIS*) interaktif yang dirancang khusus untuk memetakan sebaran lokasi tempat tinggal warga di Dusun Jaten. Proyek ini dikembangkan sebagai bagian dari program kerja **KKN ISL UKDW 2026 — Kelompok Jaten**.
+<img src="Logo_ISL.png" alt="Logo KKN ISL" width="250">
 
-Aplikasi ini menggunakan integrasi Google Sheets sebagai sumber *database* (melalui konversi publikasi CSV), sehingga memudahkan pengurus dusun atau anggota tim KKN untuk memperbarui data secara langsung tanpa perlu menyentuh kode program.
+# 🏠 Peta Digital Rumah Warga Jaten
+### *Web-based Geographic Information System (Web-GIS)*
 
----
-
-## Fitur Utama
-
-*   **Peta Interaktif Leaflet.js**: Navigasi responsif dengan dukungan kontrol perbesaran (*zoom*) dan pergeseran.
-*   **Ganti Lapisan Peta (Layer Toggle)**: Pilihan tampilan peta standar (OSM), Satelit Google, atau Peta Hybrid.
-*   **Sidebar Daftar Warga**: Menampilkan seluruh daftar warga lengkap dengan bilah pencarian (*live search*) berdasarkan nama atau alamat.
-*   **Penanda Kustom (Custom Markers)**: Desain penanda peta dinamis, termasuk penanda khusus berlambang `🐦` untuk warga yang memiliki mata pencaharian sebagai pengrajin sangkar burung.
-*   **Pop-up Detail Informatif**: Menampilkan informasi lengkap warga (nama, alamat, pekerjaan) saat penanda diklik, lengkap dengan tombol pintasan menuju Google Maps.
-*   **Desain Responsif**: Antarmuka modern yang optimal baik saat diakses via komputer (*desktop*) maupun *smartphone* (*mobile*).
+[![KKN UKDW](https://img.shields.io/badge/KKN%20ISL-UKDW%202026-0a2540?style=for-the-badge&logo=googlemaps&logoColor=white)](https://ukdw.ac.id)
+[![Leaflet](https://img.shields.io/badge/Leaflet-v1.9.4-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com/)
+[![License](https://img.shields.io/badge/Status-Active-brightgreen?style=for-the-badge)](#)
 
 ---
 
-## Struktur File Proyek
+Aplikasi pemetaan digital berbasis web yang dikembangkan khusus untuk memetakan sebaran lokasi tempat tinggal warga serta identifikasi mata pencaharian di **Dusun Jaten**. 
 
-Proyek ini menggunakan pemisahan kode yang bersih demi kemudahan pemeliharaan (*clean code*):
+Diinisiasi sebagai program kerja **KKN ISL UKDW 2026 | Kelompok Jaten**.
+
+</div>
+
+<br>
+
+> **Fitur Unggulan** : Mengintegrasikan **Google Sheets API** (publikasi CSV) sebagai *database real-time*. Memungkinkan pengurus dusun atau tim KKN memperbarui data warga secara langsung melalui spreadsheet tanpa perlu mengubah kode program.
+
+---
+
+## 💡 Fitur Utama
+
+| Fitur | Deskripsi |
+| :--- | :--- |
+| **Peta Interaktif** | Navigasi responsif berbasis **Leaflet.js** dengan *zoom control* dan tata letak dinamis. |
+| **Layer Toggle** | Perpindahan mode tampilan peta secara fleksibel: **Peta Jalan (OSM)**, **Satelit Google**, dan **Hybrid**. |
+| **Live Search & Sidebar** | Pencarian instan berdasarkan nama warga atau alamat dengan interaksi kartu daftar warga. |
+| **Smart Markers** | Marker peta dinamis. Menggunakan ikon khusus `🐦` secara otomatis untuk warga pengrajin sangkar burung. |
+| **Google Maps Integration** | Pop-up detail warga dilengkapi tombol pintasan rute langsung menuju aplikasi Google Maps. |
+| **Fully Responsive UI** | Desain *mobile-first* yang nyaman diakses melalui smartphone, tablet, maupun komputer desktop. |
+
+---
+
+## 📁 Struktur Folder
+
+Pemisahan kode dibuat modular dan bersih (*clean code*) untuk kemudahan pengembangan jangka panjang:
 
 ```text
-├── index.html        # Struktur utama web dan logika JavaScript (Leaflet & Fetch API)
-├── style.css         # Seluruh aturan desain, layout, tata letak, dan media queries
-└── peta.jpg      # Aset gambar penunjuk arah mata angin (kompas)
+📦 peta-warga-jaten
+ ┣ 📜 index.html        # Struktur DOM, logika antarmuka, & penanganan data JavaScript
+ ┣ 🎨 style.css         # Styling, variabel warna, animasi, & breakpoint responsif
+ ┣ 🖼️ Logo_ISL.png      # Logo identitas kegiatan KKN ISL UKDW
+ ┗ 🖼️ peta.jpg          # Aset visual penunjuk arah mata angin (kompas)
