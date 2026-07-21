@@ -4,6 +4,8 @@
   --primary-brand: #1e3a8a;      /* Royal Navy */
   --primary-light: #2563eb;      /* Vivid Blue */
   --accent-orange: #f97316;      /* Vibrant Orange (Tema Burung/Sangkar) */
+  --accent-emerald: #10b981;     /* Emerald Green (Tema Masjid/Musholla) */
+  --accent-teal: #0d9488;        /* Dark Teal Green (Tema Lapangan) */
   --accent-amber: #f59e0b;       /* Gold Amber */
   --bg-main: #f8fafc;             /* Soft Light Grey */
   --surface: #ffffff;            /* Pure White */
@@ -20,7 +22,6 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* KUNCI SUPAYA HALAMAN FULLSCREEN & TIDAK BISA DI-SCROLL LAYARNYA DI HP */
 html, body {
   width: 100%;
   height: 100%;
@@ -263,8 +264,7 @@ header {
 }
 
 .sidebar-search { 
-  padding: 10px; 
-  border-bottom: 1px solid var(--border-line); 
+  padding: 10px 10px 6px; 
 }
 
 .search-box {
@@ -287,6 +287,52 @@ header {
   color: var(--text-main); 
   outline: none; 
   font-family: inherit; 
+}
+
+/* ── STYLING FILTER CHIPS ── */
+.filter-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 10px;
+  border-bottom: 1px solid var(--border-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.filter-chips::-webkit-scrollbar { display: none; }
+
+.filter-chip {
+  flex-shrink: 0;
+  border: 1.5px solid var(--border-line);
+  background: var(--bg-main);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  border-color: var(--primary-light);
+  color: var(--primary-brand);
+}
+
+.filter-chip.active {
+  background: var(--primary-brand);
+  border-color: var(--primary-brand);
+  color: #ffffff;
+}
+
+.filter-chip.active .chip-icon {
+  background: #ffffff;
+  border-radius: 50%;
+  padding: 1px;
 }
 
 .sidebar-list { 
@@ -337,6 +383,16 @@ header {
   background: linear-gradient(135deg, var(--accent-orange), var(--accent-amber)); 
 }
 
+.warga-avatar.masjid { 
+  background: linear-gradient(135deg, var(--accent-emerald), #059669); 
+  font-size: 16px;
+}
+
+.warga-avatar.lapangan { 
+  background: linear-gradient(135deg, var(--accent-teal), #0f766e); 
+  font-size: 16px;
+}
+
 .warga-info { flex: 1; min-width: 0; }
 
 .warga-nama { 
@@ -370,6 +426,18 @@ header {
   background: #fff7ed; 
   color: var(--accent-orange); 
   border-color: #ffedd5; 
+}
+
+.warga-pill.masjid { 
+  background: #ecfdf5; 
+  color: var(--accent-emerald); 
+  border-color: #a7f3d0; 
+}
+
+.warga-pill.lapangan { 
+  background: #f0fdfa; 
+  color: var(--accent-teal); 
+  border-color: #99f6e4; 
 }
 
 /* ── MAP ── */
@@ -411,7 +479,42 @@ header {
 
 .sidebar-overlay.show { display: block; }
 
-/* ── MATA ANGIN / KOMPAS RESPONSIF ── */
+/* ── LEGENDA PETA MELAYANG ── */
+.legend-float {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid var(--border-line);
+  border-radius: 10px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-orange);
+  border: 1.5px solid #ffffff;
+  display: inline-block;
+}
+
+/* ── MATA ANGIN / KOMPAS ── */
 .compass-container {
   position: absolute;
   top: 14px;
@@ -458,7 +561,50 @@ header {
   clip-path: polygon(50% 0%, 100% 50%, 65% 50%, 65% 100%, 35% 100%, 35% 50%, 0% 50%);
 }
 
-/* ── ICON MARKER ── */
+/* ── STYLING LOGO SANGKAR BURUNG KUSTOM ── */
+.marker-icon-bird-wrap {
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 2px solid var(--accent-orange);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(249, 115, 22, 0.45);
+  transform: translateY(-4px);
+}
+
+.marker-bird-img {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.inline-bird-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+.avatar-bird-img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.chip-icon, .legend-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
 .marker-icon-bird {
   font-size: 22px;
   line-height: 1;
@@ -474,7 +620,7 @@ header {
   box-shadow: 0 2px 6px rgba(249, 115, 22, 0.4);
 }
 
-/* ── POPUP (UKURAN LEBIH COMPACT & PAS) ── */
+/* ── POPUP ── */
 .leaflet-popup-content-wrapper {
   overflow: hidden !important;
   padding: 0 !important;
@@ -488,8 +634,8 @@ header {
 }
 
 .popup-wrap { 
-  min-width: 240px !important; /* Dikecilkan dari 320px ke 240px */
-  max-width: 300px !important; /* Dikecilkan dari 420px ke 300px */
+  min-width: 240px !important; 
+  max-width: 300px !important; 
   padding: 12px 14px 14px;
 }
 
@@ -504,19 +650,19 @@ header {
   gap: 10px;
 }
 
-.popup-header.sangkar {
-  background: var(--accent-orange);
-}
+.popup-header.sangkar { background: var(--accent-orange); }
+.popup-header.masjid { background: var(--accent-emerald); }
+.popup-header.lapangan { background: var(--accent-teal); }
 
 .popup-avatar-wrap {
-  width: 28px; 
-  height: 28px;
+  width: 30px; 
+  height: 30px;
   background: rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
+  border-radius: 50%;
   display: flex; 
   align-items: center; 
   justify-content: center;
-  font-size: 11px; 
+  font-size: 13px; 
   font-weight: 800; 
   color: #ffffff;
 }
@@ -530,7 +676,7 @@ header {
 .popup-row {
   display: flex; 
   justify-content: space-between; 
-  align-items: flex-start;
+  align-items: center;
   padding: 6px 0; 
   border-bottom: 1px solid var(--border-line);
   font-size: 11.5px; 
@@ -541,7 +687,14 @@ header {
 
 .popup-label { color: var(--text-muted); font-weight: 500; }
 
-.popup-val { font-weight: 700; color: var(--primary-dark); text-align: right; }
+.popup-val { 
+  font-weight: 700; 
+  color: var(--primary-dark); 
+  text-align: right; 
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
 
 /* ── TOMBOL POPUP GMAPS ── */
 .popup-gmaps {
@@ -564,18 +717,11 @@ header {
   color: #ffffff !important;
 }
 
-.popup-gmaps.sangkar {
-  background: var(--accent-orange);
-  color: #ffffff !important;
-  box-shadow: 0 2px 6px rgba(249, 115, 22, 0.25);
-}
+.popup-gmaps.sangkar { background: var(--accent-orange); box-shadow: 0 2px 6px rgba(249, 115, 22, 0.25); }
+.popup-gmaps.masjid { background: var(--accent-emerald); box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25); }
+.popup-gmaps.lapangan { background: var(--accent-teal); box-shadow: 0 2px 6px rgba(13, 148, 136, 0.25); }
 
-.popup-gmaps.sangkar:hover {
-  background: #ea580c;
-  color: #ffffff !important;
-}
-
-/* ── TOMBOL SILANG (CLOSE BUTTON) POPUP ── */
+/* ── TOMBOL SILANG POPUP ── */
 .leaflet-popup-close-button {
   top: 10px !important;
   right: 10px !important;
@@ -693,6 +839,14 @@ header {
   .dir { font-size: 9px; }
   .compass-needle { height: 30px; margin-top: -15px; width: 5px; margin-left: -2.5px; }
 
+  .legend-float {
+    bottom: 10px;
+    left: 10px;
+    padding: 6px 10px;
+    font-size: 10px;
+    gap: 8px;
+  }
+
   .warga-card { padding: 8px 10px; }
   .warga-avatar { width: 34px; height: 34px; font-size: 11px; }
   .warga-nama { font-size: 12.5px; }
@@ -714,4 +868,4 @@ header {
   .btn-hamburger { display: none; }
   .mobile-layer-bar { display: none !important; }
   .sidebar-overlay { display: none !important; }
-} 
+}
