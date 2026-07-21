@@ -1,17 +1,16 @@
-/* ── PALET WARNA AESTHETIC & HARMONIS ── */
 :root {
-  --primary-dark: #0f172a;       /* Slate/Navy Gelap */
-  --primary-brand: #1e3a8a;      /* Royal Navy */
-  --primary-light: #2563eb;      /* Vivid Blue */
-  --accent-orange: #f97316;      /* Vibrant Orange (Tema Burung/Sangkar) */
-  --accent-emerald: #10b981;     /* Emerald Green (Tema Masjid/Musholla) */
-  --accent-teal: #0d9488;        /* Dark Teal Green (Tema Lapangan) */
-  --accent-amber: #f59e0b;       /* Gold Amber */
-  --bg-main: #f8fafc;             /* Soft Light Grey */
-  --surface: #ffffff;            /* Pure White */
-  --text-main: #0f172a;          /* Dark Text */
-  --text-muted: #64748b;         /* Muted Text */
-  --border-line: #e2e8f0;        /* Subtle Border */
+  --primary-dark: #0f172a;       
+  --primary-brand: #1e3a8a;      
+  --primary-light: #2563eb;      
+  --accent-orange: #f97316;      
+  --accent-emerald: #10b981;     
+  --accent-teal: #0d9488;        
+  --accent-amber: #f59e0b;       
+  --bg-main: #f8fafc;            
+  --surface: #ffffff;            
+  --text-main: #0f172a;          
+  --text-muted: #64748b;         
+  --border-line: #e2e8f0;        
   --shadow-subtle: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
 }
 
@@ -38,7 +37,7 @@ body {
   flex-direction: column; 
 }
 
-/* ── HEADER BESAR & PROPORSI ELEGAN ── */
+/* Header */
 header {
   background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
   color: #ffffff;
@@ -205,7 +204,7 @@ header {
   cursor: pointer;
 }
 
-/* ── MAIN TATA LETAK ── */
+/* Tata Letak Main */
 .main { 
   display: flex; 
   flex: 1; 
@@ -478,6 +477,7 @@ header {
 }
 
 .sidebar-overlay.show { display: block; }
+
 
 /* ── LEGENDA PETA MELAYANG ── */
 .legend-float {

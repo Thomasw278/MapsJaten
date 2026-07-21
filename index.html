@@ -2,8 +2,20 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Peta Rumah Warga Jaten - KKN ISL UKDW 2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Maps Warga Jaten | KKN ISL UKDW 2026</title>
+  <meta name="description" content="Maps Warga Jaten merupakan peta digital interaktif rumah warga Padukuhan Jaten yang dibuat oleh mahasiswa KKN ISL UKDW 2026.">
+  <meta name="author" content="KKN ISL UKDW 2026">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="Maps Warga Jaten">
+  <meta property="og:description" content="Peta digital interaktif rumah warga Padukuhan Jaten.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://thomasw278.github.io/MapsJaten/">
+  <link rel="canonical" href="https://thomasw278.github.io/MapsJaten/">
+  
+  <link rel="icon" type="image/x-icon" href="Logo_ISL.png">
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -58,11 +70,10 @@
     <div class="sidebar-search">
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input class="search-input" type="text" id="searchInput" placeholder="Cari nama, masjid, lapangan...">
+        <input class="search-input" type="text" id="searchInput" placeholder="Cari Nama Warga / Lokasi">
       </div>
     </div>
 
-    <!-- TOMBOL FILTER CEPAT (CATEGORY CHIPS) -->
     <div class="filter-chips">
       <button class="filter-chip active" data-cat="all">Semua</button>
       <button class="filter-chip" data-cat="sangkar"><img src="Bird Image.png" class="chip-icon" alt="Sangkar"> Sangkar</button>
@@ -86,7 +97,6 @@
 
     <div id="map"></div>
     
-    <!-- LEGENDA PETA MELAYANG (FLOATING LEGEND) -->
     <div class="legend-float">
       <div class="legend-item"><span class="legend-dot"></span> Warga</div>
       <div class="legend-item"><img src="Bird Image.png" class="legend-icon" alt="Sangkar"> Sangkar</div>
@@ -94,7 +104,6 @@
       <div class="legend-item"><span>⚽</span> Fasum</div>
     </div>
 
-    <!-- KOMPAS -->
     <div class="compass-container" title="Klik untuk reset ke arah Utara">
       <div class="compass-dial">
         <span class="dir north">U</span>
@@ -127,7 +136,6 @@ var tileLayers = {
 var map = L.map("map", { zoomControl:true }).setView([-7.8012, 110.2804], 15);
 tileLayers.satelit.addTo(map);
 
-/* ── ANIMASI KOMPAS ── */
 var compassDial = document.querySelector('.compass-dial');
 var lastCenter = map.getCenter();
 var ticking = false;
@@ -163,7 +171,6 @@ if (compassDial) {
   });
 }
 
-/* ── TOGGLE LAYER PETA ── */
 var layerAktif = "satelit";
 document.querySelectorAll(".layer-btn").forEach(function(btn) {
   btn.addEventListener("click", function() {
@@ -216,7 +223,6 @@ function getInisial(nama) {
   return nama.split(" ").slice(0,2).map(function(w){ return w[0]||""; }).join("").toUpperCase();
 }
 
-/* ── KATEGORI KATA KUNCI ── */
 function isMasjid(p, nama) {
   var str = (p + " " + nama).toLowerCase();
   return str.includes("masjid") || str.includes("musholla") || str.includes("musolla");
@@ -286,7 +292,6 @@ function tambahMarker(d) {
     .addTo(map).bindPopup(buatPopup(d), {maxWidth: 300});
 }
 
-/* ── LOGIKA FILTER UTAMA ── */
 function applyFilters() {
   var filtered = dataWarga.filter(function(d) {
     var cat = getCategoryClass(d);
