@@ -2,11 +2,11 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Peta Rumah Warga Jaten - KKN ISL UKDW 2026</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -16,7 +16,9 @@
 <header>
   <div class="header-left">
     <div class="header-badge">
-      <div class="header-badge-icon">🏘️</div>
+      <div class="header-badge-icon">
+        <img src="Logo_ISL.png" width="26" height="26" alt="Logo">
+      </div>
       <div class="header-badge-text">Jaten</div>
     </div>
     <div class="header-sep"></div>
@@ -25,7 +27,7 @@
         <span class="judul-full">Peta Rumah Warga Jaten</span>
         <span class="judul-short">Maps Jaten</span>
       </h1>
-      <p>KKN ISL UKDW 2026 — Kelompok Gubug</p>
+      <p>KKN ISL UKDW 2026 | Kelompok Jaten</p>
     </div>
   </div>
   <div class="header-right">
@@ -72,8 +74,14 @@
     </div>
     <div id="map"></div>
     
-    <div class="compass-container">
-      <img src="peta.jpg" class="compass-img" alt="Mata Angin">
+    <div class="compass-container" title="Klik untuk reset ke arah Utara">
+      <div class="compass-dial">
+        <span class="dir north">U</span>
+        <span class="dir east">T</span>
+        <span class="dir south">S</span>
+        <span class="dir west">B</span>
+        <div class="compass-needle"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -96,7 +104,42 @@ var tileLayers = {
 
 var map = L.map("map", { zoomControl:true }).setView([-7.8012, 110.2804], 15);
 tileLayers.satelit.addTo(map);
-setTimeout(function(){ map.invalidateSize(); }, 200);
+
+var compassDial = document.querySelector('.compass-dial');
+var lastCenter = map.getCenter();
+var ticking = false;
+
+function updateCompassRotation() {
+  var currentCenter = map.getCenter();
+  var dy = currentCenter.lat - lastCenter.lat;
+  var dx = currentCenter.lng - lastCenter.lng;
+
+  if (Math.abs(dx) > 0.000005 || Math.abs(dy) > 0.000005) {
+    var angle = Math.atan2(dx, dy) * (180 / Math.PI);
+    compassDial.style.setProperty('--compass-angle', angle + 'deg');
+  }
+  ticking = false;
+}
+
+map.on('move', function() {
+  if (!ticking) {
+    window.requestAnimationFrame(updateCompassRotation);
+    ticking = true;
+  }
+});
+
+map.on('moveend', function() {
+  lastCenter = map.getCenter();
+});
+
+if (compassDial) {
+  compassDial.addEventListener('click', function() {
+    lastCenter = map.getCenter();
+    compassDial.style.setProperty('--compass-angle', '0deg');
+    tampilToast("🧭 Kompas direset ke arah Utara");
+  });
+}
+
 var layerAktif = "satelit";
 
 document.querySelectorAll(".layer-btn").forEach(function(btn) {
@@ -171,22 +214,25 @@ function buatIcon(pekerjaan) {
 function buatPopup(d) {
   var gmapsUrl = "https://www.google.com/maps?q="+d.lat+","+d.lng;
   var pkIcon = isSangkar(d.pekerjaan) ? "🐦 " : "";
+  var sangkarClass = isSangkar(d.pekerjaan) ? " sangkar" : "";
+
   return "<div class='popup-wrap'>"
-    +"<div class='popup-header'>"
+    +"<div class='popup-header"+sangkarClass+"'>"
     +"<div class='popup-avatar-wrap'>"+getInisial(d.nama)+"</div>"
     +"<div><div class='popup-nama'>"+d.nama+"</div></div>"
     +"</div>"
     +"<div class='popup-body'>"
     +"<div class='popup-row'><span class='popup-label'>Alamat</span><span class='popup-val'>"+d.alamat+"</span></div>"
     +"<div class='popup-row'><span class='popup-label'>Pekerjaan</span><span class='popup-val'>"+pkIcon+d.pekerjaan+"</span></div>"
-    +"<a href='"+gmapsUrl+"' target='_blank' class='popup-gmaps'>📍 Buka di Google Maps</a>"
+    +"<a href='"+gmapsUrl+"' target='_blank' class='popup-gmaps"+sangkarClass+"'>📍 Buka di Google Maps</a>"
     +"</div></div>";
 }
 
 function tambahMarker(d) {
   if(!d.lat || !d.lng) return;
+  /* Batas lebar maksimal 420px agar popup jauh lebih panjang & luas */
   markers[d.id] = L.marker([d.lat, d.lng], {icon: buatIcon(d.pekerjaan)})
-    .addTo(map).bindPopup(buatPopup(d), {maxWidth:250});
+    .addTo(map).bindPopup(buatPopup(d), {maxWidth: 420});
 }
 
 function renderSidebar() {
@@ -246,7 +292,7 @@ function loadData() {
         map.setView([cLat, cLng], 16, {animate:true});
       }
       updateStats(); renderSidebar();
-      tampilToast("Jumlah Warga : "+dataWarga.length)
+      tampilToast("Jumlah Warga : "+dataWarga.length);
     })
     .catch(function() {
       list.innerHTML = "<div class='empty-state'><div class='emoji'>❌</div><p>Gagal memuat data</p></div>";
