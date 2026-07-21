@@ -6,7 +6,7 @@
   <title>Peta Rumah Warga Jaten - KKN ISL UKDW 2026</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -17,7 +17,7 @@
   <div class="header-left">
     <div class="header-badge">
       <div class="header-badge-icon">
-        <img src="Logo_ISL.png" width="25px" height="25px" alt="Logo">
+        <img src="Logo_ISL.png" width="25px" height="25px">
       </div>
       <div class="header-badge-text">Jaten</div>
     </div>
@@ -105,31 +105,22 @@ var tileLayers = {
 var map = L.map("map", { zoomControl:true }).setView([-7.8012, 110.2804], 15);
 tileLayers.satelit.addTo(map);
 
-// ── OPTIMASI KINERJA KOMPAS UNTUK HP ──
 var compassDial = document.querySelector('.compass-dial');
 var lastCenter = map.getCenter();
-var ticking = false;
 
 function updateCompassRotation() {
   var currentCenter = map.getCenter();
   var dy = currentCenter.lat - lastCenter.lat;
   var dx = currentCenter.lng - lastCenter.lng;
 
-  // Nilai ambang batas dinaikkan sedikit agar HP tidak kewalahan
-  if (Math.abs(dx) > 0.000005 || Math.abs(dy) > 0.000005) {
+  if (Math.abs(dx) > 0.000001 || Math.abs(dy) > 0.000001) {
     var angle = Math.atan2(dx, dy) * (180 / Math.PI);
     compassDial.style.setProperty('--compass-angle', angle + 'deg');
+    compassDial.style.transform = "rotateX(25deg) rotateY(-10deg) rotate(" + angle + "deg)";
   }
-  ticking = false;
 }
 
-// Gunakan requestAnimationFrame agar gerakan tidak bikin patah-patah di layar HP
-map.on('move', function() {
-  if (!ticking) {
-    window.requestAnimationFrame(updateCompassRotation);
-    ticking = true;
-  }
-});
+map.on('move', updateCompassRotation);
 
 map.on('moveend', function() {
   lastCenter = map.getCenter();
@@ -139,6 +130,7 @@ if (compassDial) {
   compassDial.addEventListener('click', function() {
     lastCenter = map.getCenter();
     compassDial.style.setProperty('--compass-angle', '0deg');
+    compassDial.style.transform = "rotateX(25deg) rotateY(-10deg) rotate(0deg)";
     tampilToast("🧭 Kompas direset ke arah Utara");
   });
 }
@@ -218,7 +210,7 @@ function buatPopup(d) {
   var gmapsUrl = "https://www.google.com/maps?q="+d.lat+","+d.lng;
   var pkIcon = isSangkar(d.pekerjaan) ? "🐦 " : "";
   return "<div class='popup-wrap'>"
-    +"<div class='popup-header"+(isSangkar(d.pekerjaan)?" sangkar":"")+"'>"
+    +"<div class='popup-header'>"
     +"<div class='popup-avatar-wrap'>"+getInisial(d.nama)+"</div>"
     +"<div><div class='popup-nama'>"+d.nama+"</div></div>"
     +"</div>"
